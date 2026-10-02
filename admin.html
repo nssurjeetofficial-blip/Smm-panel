@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel | SMM Panel</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #080b14;
+      color: white;
+    }
+
+    .topbar {
+      height: 65px;
+      background: #0d111d;
+      border-bottom: 1px solid #202638;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 5%;
+    }
+
+    .logo {
+      color: #756cff;
+      font-size: 21px;
+      font-weight: bold;
+    }
+
+    .admin {
+      background: #171c2b;
+      padding: 9px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    .layout {
+      display: flex;
+      min-height: calc(100vh - 65px);
+    }
+
+    .sidebar {
+      width: 235px;
+      background: #0d111d;
+      border-right: 1px solid #202638;
+      padding: 22px 15px;
+    }
+
+    .sidebar-title {
+      color: #626a7d;
+      font-size: 11px;
+      text-transform: uppercase;
+      margin: 5px 12px 12px;
+      letter-spacing: 1px;
+    }
+
+    .sidebar a {
+      display: block;
+      text-decoration: none;
+      color: #aeb4c5;
+      padding: 13px 14px;
+      border-radius: 8px;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .sidebar a:hover,
+    .sidebar a.active {
+      background: #6c63ff;
+      color: white;
+    }
+
+    .main {
+      flex: 1;
+      padding: 30px;
+      overflow-x: hidden;
+    }
+
+    .heading {
+      margin-bottom: 25px;
+    }
+
+    .heading h1 {
+      font-size: 28px;
+      margin-bottom: 7px;
+    }
+
+    .heading p {
+      color: #858da1;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 25px;
+    }
+
+    .stat {
+      background: #101522;
+      border: 1px solid #202638;
+      border-radius: 12px;
+      padding: 21px;
+    }
+
+    .stat-icon {
+      font-size: 23px;
+      margin-bottom: 13px;
+    }
+
+    .stat-name {
+      color: #858da1;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 25px;
+      font-weight: bold;
+    }
+
+    .panel {
+      background: #101522;
+      border: 1px solid #202638;
+      border-radius: 12px;
+      padding: 22px;
+      margin-bottom: 22px;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .panel-header h2 {
+      font-size: 19px;
+    }
+
+    .btn {
+      background: #6c63ff;
+      border: none;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      min-width: 650px;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 14px 12px;
+      text-align: left;
+      border-bottom: 1px solid #202638;
+      font-size: 13px;
+    }
+
+    th {
+      color: #777f94;
+      font-weight: normal;
+    }
+
+    td {
+      color: #cbd0df;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 20px;
+      font-size: 11px;
+    }
+
+    .pending {
+      background: #302914;
+      color: #e4c76d;
+    }
+
+    .completed {
+      background: #152c21;
+      color: #6fd59a;
+    }
+
+    .processing {
+      background: #171f38;
+      color: #849aff;
+    }
+
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+    }
+
+    .action {
+      background: #0c101b;
+      border: 1px solid #252c40;
+      border-radius: 10px;
+      padding: 20px;
+      cursor: pointer;
+    }
+
+    .action:hover {
+      border-color: #6c63ff;
+    }
+
+    .action-icon {
+      font-size: 25px;
+      margin-bottom: 10px;
+    }
+
+    .action h3 {
+      font-size: 15px;
+      margin-bottom: 6px;
+    }
+
+    .action p {
+      color: #777f94;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 950px) {
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .quick-actions {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 650px) {
+      .sidebar {
+        display: none;
+      }
+
+      .main {
+        padding: 20px 15px;
+      }
+
+      .stats {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .stat {
+        padding: 15px;
+      }
+
+      .stat-value {
+        font-size: 20px;
+      }
+
+      .quick-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .heading h1 {
+        font-size: 23px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="logo">SMM PANEL</div>
+    <div class="admin">🛡️ Administrator</div>
+  </header>
+
+
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+      <div class="sidebar-title">Management</div>
+
+      <a href="#" class="active">📊 Dashboard</a>
+      <a href="#">👥 Customers</a>
+      <a href="#">🛒 Orders</a>
+      <a href="#">📦 Services</a>
+      <a href="#">💰 Payments</a>
+
+      <div class="sidebar-title">System</div>
+
+      <a href="#">🔌 Provider API</a>
+      <a href="#">⚙️ Settings</a>
+      <a href="#">🔐 Security</a>
+      <a href="#">🚪 Logout</a>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+
+      <div class="heading">
+        <h1>Admin Dashboard</h1>
+        <p>Manage your SMM panel from one place.</p>
+      </div>
+
+
+      <!-- STATISTICS -->
+      <div class="stats">
+
+        <div class="stat">
+          <div class="stat-icon">👥</div>
+          <div class="stat-name">Total Customers</div>
+          <div class="stat-value">0</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-icon">🛒</div>
+          <div class="stat-name">Total Orders</div>
+          <div class="stat-value">0</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-icon">💰</div>
+          <div class="stat-name">Revenue</div>
+          <div class="stat-value">₹0</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-name">Pending Orders</div>
+          <div class="stat-value">0</div>
+        </div>
+
+      </div>
+
+
+      <!-- RECENT ORDERS -->
+      <div class="panel">
+
+        <div class="panel-header">
+          <h2>Recent Orders</h2>
+          <button class="btn">View All</button>
+        </div>
+
+        <div class="table-container">
+
+          <table>
+
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Service</th>
+                <th>Amount</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              <tr>
+                <td>#10001</td>
+                <td>No customers yet</td>
+                <td>—</td>
+                <td>₹0</td>
+                <td>
+                  <span class="status pending">Pending</span>
+                </td>
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+
+      <!-- QUICK ACTIONS -->
+      <div class="panel">
+
+        <div class="panel-header">
+          <h2>Quick Actions</h2>
+        </div>
+
+        <div class="quick-actions">
+
+          <div class="action">
+            <div class="action-icon">➕</div>
+            <h3>Add Service</h3>
+            <p>Create a new service for customers.</p>
+          </div>
+
+          <div class="action">
+            <div class="action-icon">👤</div>
+            <h3>Manage Customers</h3>
+            <p>View and manage customer accounts.</p>
+          </div>
+
+          <div class="action">
+            <div class="action-icon">🔌</div>
+            <h3>Provider API</h3>
+            <p>Configure an authorized service provider.</p>
+          </div>
+
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
+
+</body>
+    </html>
