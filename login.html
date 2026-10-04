@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - SMM PANEL</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #080b12;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .login-box {
+      width: 100%;
+      max-width: 420px;
+      background: #111722;
+      padding: 30px;
+      border-radius: 18px;
+      border: 1px solid #252d3d;
+      box-shadow: 0 20px 50px rgba(0,0,0,.4);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #8f9bad;
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin: 15px 0 7px;
+      color: #cbd5e1;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px;
+      border-radius: 10px;
+      border: 1px solid #30394b;
+      background: #0b1019;
+      color: white;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #4f8cff;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 22px;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: #4f8cff;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: .9;
+    }
+
+    #message {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    .signup {
+      text-align: center;
+      margin-top: 20px;
+      color: #8f9bad;
+    }
+
+    .signup a {
+      color: #4f8cff;
+      text-decoration: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="login-box">
+
+    <h1>Welcome Back</h1>
+    <p class="subtitle">Login to your SMM PANEL account</p>
+
+    <form id="loginForm">
+
+      <label>Email</label>
+      <input
+        type="email"
+        id="email"
+        placeholder="Enter your email"
+        required
+      >
+
+      <label>Password</label>
+      <input
+        type="password"
+        id="password"
+        placeholder="Enter your password"
+        required
+      >
+
+      <button type="submit">Login</button>
+
+    </form>
+
+    <div id="message"></div>
+
+    <div class="signup">
+      Don't have an account?
+      <a href="Signup.html">Create Account</a>
+    </div>
+
+  </div>
+
+<script>
+
+  // Supabase connection
+  const SUPABASE_URL = "YOUR_SUPABASE_URL";
+  const SUPABASE_ANON_KEY = "YOUR_SUPABASE_PUBLISHABLE_KEY";
+
+  const supabaseClient = window.supabase.createClient(
+    "https://qqttryckhwpbgzjmkrnj.supabase.co",
+    "sb_publishable_4u-pJN7ausMBsb9dOffdxA_T9nfKvlj"
+  );
+
+  const form = document.getElementById("loginForm");
+  const message = document.getElementById("message");
+
+  form.addEventListener("submit", async function(e) {
+
+    e.preventDefault();
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    message.textContent = "Logging in...";
+
+    const { data, error } =
+      await supabaseClient.auth.signInWithPassword({
+        email: email,
+        password: password
+      });
+
+    if (error) {
+      message.textContent = error.message;
+      message.style.color = "#ff6b6b";
+      return;
+    }
+
+    message.textContent = "Login successful!";
+    message.style.color = "#4ade80";
+
+    setTimeout(() => {
+      window.location.href = "dashboard.html";
+    }, 800);
+
+  });
+
+</script>
+
+</body>
+</html>
