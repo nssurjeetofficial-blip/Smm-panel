@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile - SMM PANEL</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
+
+body{
+  background:#080b12;
+  color:#fff;
+  min-height:100vh
+}
+
+header{
+  background:#111722;
+  border-bottom:1px solid #252d3d;
+  padding:18px 22px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center
+}
+
+.logo{font-size:21px;font-weight:bold}
+
+.back{
+  color:#4f8cff;
+  text-decoration:none
+}
+
+.container{
+  max-width:650px;
+  margin:auto;
+  padding:35px 20px
+}
+
+h1{
+  font-size:30px;
+  margin-bottom:8px
+}
+
+.subtitle{
+  color:#8f9bad;
+  margin-bottom:25px
+}
+
+.card{
+  background:#111722;
+  border:1px solid #252d3d;
+  border-radius:16px;
+  padding:25px
+}
+
+.avatar{
+  width:75px;
+  height:75px;
+  border-radius:50%;
+  background:#4f8cff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:28px;
+  font-weight:bold;
+  margin:0 auto 25px
+}
+
+label{
+  display:block;
+  margin:16px 0 8px;
+  color:#cbd5e1
+}
+
+input{
+  width:100%;
+  padding:13px;
+  border-radius:10px;
+  border:1px solid #30394b;
+  background:#0b1019;
+  color:#fff;
+  outline:none
+}
+
+input:focus{
+  border-color:#4f8cff
+}
+
+button{
+  width:100%;
+  padding:13px;
+  margin-top:22px;
+  border:0;
+  border-radius:10px;
+  background:#4f8cff;
+  color:white;
+  font-size:15px;
+  font-weight:bold;
+  cursor:pointer
+}
+
+.logout{
+  background:#ef4444;
+  margin-top:12px
+}
+
+#message{
+  text-align:center;
+  margin-top:15px;
+  font-size:14px
+}
+
+footer{
+  text-align:center;
+  padding:30px;
+  color:#667085;
+  font-size:13px
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">SMM PANEL</div>
+  <a href="dashboard.html" class="back">← Dashboard</a>
+</header>
+
+<main class="container">
+
+  <h1>My Profile</h1>
+  <p class="subtitle">Manage your account information.</p>
+
+  <div class="card">
+
+    <div class="avatar" id="avatar">U</div>
+
+    <label>Full Name</label>
+    <input type="text" id="name" placeholder="Your name">
+
+    <label>Email</label>
+    <input type="email" id="email" disabled>
+
+    <button id="saveBtn">Save Changes</button>
+
+    <button class="logout" id="logoutBtn">Logout</button>
+
+    <div id="message"></div>
+
+  </div>
+
+</main>
+
+<footer>
+  © 2026 SMM PANEL. All rights reserved.
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL = "YOUR_SUPABASE_URL";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_PUBLISHABLE_KEY";
+
+const supabaseClient = window.supabase.createClient(
+  "https://qqttryckhwpbgzjmkrnj.supabase.co",
+  "sb_publishable_4u-pJN7ausMBsb9dOffdxA_T9nfKvlj"
+);
+
+const nameInput = document.getElementById("name");
+const emailInput = document.getElementById("email");
+const avatar = document.getElementById("avatar");
+const message = document.getElementById("message");
+
+async function loadProfile(){
+
+  const { data: { user } } =
+    await supabaseClient.auth.getUser();
+
+  if(!user){
+    window.location.href = "login.html";
+    return;
+  }
+
+  const fullName =
+    user.user_metadata?.full_name || "";
+
+  nameInput.value = fullName;
+  emailInput.value = user.email || "";
+
+  avatar.textContent =
+    (fullName || user.email || "U")
+    .charAt(0)
+    .toUpperCase();
+}
+
+document.getElementById("saveBtn").addEventListener("click", async () => {
+
+  const name = nameInput.value.trim();
+
+  const { error } =
+    await supabaseClient.auth.updateUser({
+      data: {
+        full_name: name
+      }
+    });
+
+  if(error){
+
+    message.textContent = error.message;
+    message.style.color = "#ff6b6b";
+
+    return;
+  }
+
+  message.textContent = "Profile updated successfully!";
+  message.style.color = "#4ade80";
+
+  avatar.textContent =
+    (name || "U").charAt(0).toUpperCase();
+});
+
+document.getElementById("logoutBtn").addEventListener("click", async () => {
+
+  await supabaseClient.auth.signOut();
+
+  window.location.href = "login.html";
+});
+
+loadProfile();
+
+</script>
+
+</body>
+</html>
