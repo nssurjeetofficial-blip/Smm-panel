@@ -192,46 +192,6 @@
     }
   </style>
 </head>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-const SUPABASE_URL = "YOUR_SUPABASE_URL";
-const SUPABASE_ANON_KEY = "YOUR_SUPABASE_PUBLISHABLE_KEY";
-
-const supabaseClient = window.supabase.createClient(
-  "https://qqttryckhwpbgzjmkrnj.supabase.co",
-  "sb_publishable_4u-pJN7ausMBsb9dOffdxA_T9nfKvlj"
-);
-
-async function checkLogin() {
-  const { data: { user } } =
-    await supabaseClient.auth.getUser();
-
-  if (!user) {
-    window.location.href = "login.html";
-    return;
-  }
-
-  const name =
-    user.user_metadata?.full_name ||
-    user.email ||
-    "User";
-
-  const userName = document.getElementById("userName");
-
-  if (userName) {
-    userName.textContent = name;
-  }
-}
-
-async function logout() {
-  await supabaseClient.auth.signOut();
-  window.location.href = "login.html";
-}
-
-checkLogin();
-</script>
   
 <body>
 
@@ -340,5 +300,44 @@ checkLogin();
 
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL = "YOUR_SUPABASE_URL";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_PUBLISHABLE_KEY";
+
+const supabaseClient = window.supabase.createClient(
+  "https://qqttryckhwpbgzjmkrnj.supabase.co",
+  "sb_publishable_4u-pJN7ausMBsb9dOffdxA_T9nfKvlj"
+);
+
+async function checkLogin() {
+  const { data: { user } } =
+    await supabaseClient.auth.getUser();
+
+  if (!user) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  const name =
+    user.user_metadata?.full_name ||
+    user.email ||
+    "User";
+
+  const userName = document.getElementById("userName");
+
+  if (userName) {
+    userName.textContent = name;
+  }
+}
+
+async function logout() {
+  await supabaseClient.auth.signOut();
+  window.location.href = "login.html";
+}
+
+checkLogin();
+</script>
 </body>
 </html>
