@@ -281,7 +281,7 @@
     }
   </style>
 </head>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <body>
 
   <!-- TOP BAR -->
@@ -430,6 +430,40 @@
     </main>
 
   </div>
+<script>
+const supabaseClient = window.supabase.createClient(
+  "https://qqttryckhwpbgzjmkrnj.supabase.co",
+  "sb_publishable_4u-pJN7ausMBsb9dOffdxA_T9nfKvlj"
+);
 
+async function checkAdmin() {
+  const { data: { user } } =
+    await supabaseClient.auth.getUser();
+
+  if (!user) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  const { data: profile, error } = await supabaseClient
+    .from("profiles")
+    .select("full_name, role")
+    .eq("id", user.id)
+    .single();
+
+  if (error || !profile || profile.role !== "admin") {
+    alert("Access denied. Admin only.");
+    window.location.href = "dashboard.html";
+    return;
+  }
+}
+
+async function logout() {
+  await supabaseClient.auth.signOut();
+  window.location.href = "login.html";
+}
+
+checkAdmin();
+</script>
 </body>
     </html>
