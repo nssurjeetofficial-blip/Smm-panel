@@ -367,5 +367,56 @@ async function loadServices() {
 checkLogin();
 loadServices();
 </script>
+  <script>
+document.getElementById("submitOrder").addEventListener("click", async function () {
+  const message = document.getElementById("orderMessage");
+  const serviceId = document.getElementById("serviceSelect").value;
+  const targetUrl = document.getElementById("targetUrl").value.trim();
+  const quantity = Number(document.getElementById("quantity").value);
+
+  message.textContent = "";
+
+  if (!serviceId || !targetUrl || !Number.isInteger(quantity) || quantity < 1) {
+    message.textContent = "Please select a service and enter a valid URL and quantity.";
+    return;
+  }
+
+  this.disabled = true;
+  this.textContent = "Submitting...";
+
+  try {
+    const { data: { user }, error: userError } =
+      await supabaseClient.auth.getUser();
+
+    if (userError || !user) {
+      message.textContent = "Please log in again.";
+      window.location.href = "login.html";
+      return;
+    }
+
+    const { data, error } = await supabaseClient.rpc(
+      "create_customer_order",
+      {
+        p_service_id: Number(serviceId),
+        p_target_url: targetUrl,
+        p_quantity: quantity
+      }
+    );
+
+    if (error) throw error;
+
+    message.textContent = "Order created successfully! Order ID: " + data;
+    document.getElementById("targetUrl").value = "";
+    document.getElementById("quantity").value = "";
+
+  } catch (error) {
+    console.error(error);
+    message.textContent = "Order failed: " + error.message;
+  } finally {
+    this.disabled = false;
+    this.textContent = "Submit Order";
+  }
+});
+  </script>
 </body>
 </html>
