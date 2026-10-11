@@ -10,7 +10,7 @@
 body{background:#080b12;color:#fff;min-height:100vh}
 header{
   background:#111722;
-  border-bottom:1px solid #252d3d;
+  border-bottom:1px solid #25window.location.href2d3d;
   padding:18px 22px;
   display:flex;
   justify-content:space-between;
@@ -115,6 +115,12 @@ const supabaseClient = window.supabase.createClient(
       </thead>
 
       <tbody id="ordersTable">
+  <tr>
+    <td colspan="7">
+      <div class="empty">Loading your orders...</div>
+    </td>
+  </tr>
+      </tbody>
 
         <tr>
           <td colspan="7">
@@ -138,6 +144,101 @@ const supabaseClient = window.supabase.createClient(
 <footer>
   © 2026 SMM PANEL. All rights reserved.
 </footer>
+<script>
+async function loadOrders() {
+  const table = document.getElementById("ordersTable");
 
+  function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    })[char]);
+  }
+
+  try {
+    const { data: authData, error: authError } =
+      await supabaseClient.auth.getUser();
+
+    if (authError || !authData.user) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    const { data: orders, error } = await supabaseClient
+      .from("orders")
+      .select("id, service_id, target_url, quantity, amount, status, created_at")
+      .eq("user_id", authData.user.id)
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    if (!orders || orders.length === 0) {
+      table.innerHTML = `
+        <tr><td colspan="7">
+          <div class="empty">
+            No orders yet.<br>
+            <a href="dashboard.html" class="new-order">
+              Create New Order
+            </a>
+          </div>
+        </td></tr>`;
+      return;
+    }
+
+    const serviceIds = [...new Set(orders.map(order => order.service_id))];
+
+    const { data: services, error: serviceError } = await supabaseClient
+      .from("services")
+      .select("id, name")
+      .in("id", serviceIds);
+
+    if (serviceError) throw serviceError;
+
+    const serviceMap = new Map(
+      (services || []).map(service => [String(service.id), service.name])
+    );
+
+    table.innerHTML = orders.map(order => {
+      const date = order.created_at
+        ? new Date(order.created_at).toLocaleString()
+        : "—";
+
+      const amount = Number(order.amount);
+
+      return `
+        <tr>
+          <td>${escapeHTML(order.id)}</td>
+          <td>${escapeHTML(serviceMap.get(String(order.service_id)) || "Service")}</td>
+          <td>
+            <a href="${escapeHTML(order.target_url)}"
+               target="_blank"
+               rel="noopener noreferrer"
+               style="color:#4f8cff">
+              View target
+            </a>
+          </td>
+          <td>${escapeHTML(order.quantity)}</td>
+          <td>${Number.isFinite(amount) ? "₹" + amount.toFixed(2) : "—"}</td>
+          <td><span class="status">${escapeHTML(order.status)}</span></td>
+          <td>${escapeHTML(date)}</td>
+        </tr>`;
+    }).join("");
+
+  } catch (error) {
+    console.error("Orders loading error:", error);
+    table.innerHTML = `
+      <tr><td colspan="7">
+        <div class="empty">
+          Could not load orders. Please refresh and try again.
+        </div>
+      </td></tr>`;
+  }
+}
+
+loadOrders();
+  </script>
 </body>
 </html>
